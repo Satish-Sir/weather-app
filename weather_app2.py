@@ -104,7 +104,6 @@ states_districts = {
     ]
 }
 
-
 # -------------- DATABASE SETUP --------------
 def init_db():
     conn = sqlite3.connect('users.db')
@@ -264,6 +263,13 @@ if not st.session_state.logged_in:
 # -------------- MAIN WEATHER PAGE --------------
 else:
     st.title(f"Hello, {st.session_state.user}! Here's your weather forecast 🌞")
+
+    # Sidebar Logout Button
+    if st.sidebar.button("Logout"):
+        st.session_state.logged_in = False
+        del st.session_state.user
+        st.success("You have logged out successfully!")
+        st.experimental_rerun()
 
     # Dropdown for selecting state and district
     state = st.selectbox("Select State", list(states_districts.keys()))
