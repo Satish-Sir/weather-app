@@ -104,16 +104,17 @@ states_districts = {
     ]
 }
 
+
 # -------------- DATABASE SETUP --------------
 def init_db():
     conn = sqlite3.connect('users.db')
     cursor = conn.cursor()
-    cursor.execute(''' 
+    cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE,
             password_hash TEXT
-        ) 
+        )
     ''')
     conn.commit()
     conn.close()
@@ -149,7 +150,8 @@ def get_temperature(location, units):
     return days, temp_min, temp_max
 
 def init_plot():
-    plt.style.use('seaborn-darkgrid')
+    # Use a simple built-in Matplotlib style
+    plt.style.use('ggplot')  # You can try 'ggplot', 'fivethirtyeight', or others
     fig, ax = plt.subplots()
     ax.set_xlabel('Day')
     ax.set_ylabel(f'Temperature ({sign}C)')
@@ -233,6 +235,7 @@ if not st.session_state.logged_in:
                 st.session_state.logged_in = True
                 st.session_state.user = username
                 st.success(f"✅ Welcome back, {username}!")
+                st.experimental_rerun()
             else:
                 st.error("Incorrect username or password.")
 
@@ -252,6 +255,7 @@ if not st.session_state.logged_in:
                     conn.close()
                     st.success("🎉 Registration successful. Please log in.")
                     st.session_state.page = "Login"
+                    st.experimental_rerun()
                 except sqlite3.IntegrityError:
                     st.warning("⚠️ Username already exists. Try a new one.")
             else:
@@ -259,25 +263,16 @@ if not st.session_state.logged_in:
 
 # -------------- MAIN WEATHER PAGE --------------
 else:
-    st.markdown(f"""
-        <div style='text-align:center;'>
-            <h2 style='color:#2196f3;'>☀️ Hello, {st.session_state.user}! Here's your Weather Forecast</h2>
-        </div>
-    """, unsafe_allow_html=True)
+    st.title(f"Hello, {st.session_state.user}! Here's your weather forecast 🌞")
 
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        state = st.selectbox("📍 Select Your State:", list(states_districts.keys()))
-        location = st.selectbox("📍 Select Your District:", states_districts[state], help="Select a district from the selected state")
-    with col2:
-        units = st.radio("🌡️ Temperature Unit:", ('celsius', 'fahrenheit'))
+    # Dropdown for selecting state and district
+    state = st.selectbox("Select State", list(states_districts.keys()))
+    district = st.selectbox("Select District", states_districts[state])
 
-    graph_type = st.selectbox("📊 Graph Type:", ('Bar Graph', 'Line Graph'))
-
-    if st.button("📥 Show Forecast"):
-        weather_forecast(location, units)
-        if graph_type == 'Bar Graph':
-            fig = plot_temperature(location, units)
-            st.pyplot(fig)
-        else:
-            plot_line_graph_temp(location, units)
+    units = st.radio("Temperature Unit", ('celsius', 'fahrenheit'))
+    
+    location = f"{district}, {state}, India"
+    
+    # Show the weather and plot temperature trends
+    weather_forecast(location, units)
+    plot_line_graph_temp(location, units)
