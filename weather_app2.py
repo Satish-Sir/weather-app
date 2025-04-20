@@ -104,6 +104,7 @@ states_districts = {
     ]
 }
 
+
 # -------------- DATABASE SETUP --------------
 def init_db():
     conn = sqlite3.connect('users.db')
@@ -233,7 +234,7 @@ if not st.session_state.logged_in:
             if verify_user(username, password):
                 st.session_state.logged_in = True
                 st.session_state.user = username
-                st.experimental_set_query_params(logged_in="true")
+                st.query_params(logged_in="true")
                 st.success(f"✅ Welcome back, {username}!")
                 st.experimental_rerun()
             else:
@@ -269,7 +270,7 @@ else:
     if st.sidebar.button("Logout"):
         st.session_state.logged_in = False
         del st.session_state.user
-        st.experimental_set_query_params(logged_in="false")
+        st.query_params(logged_in="false")
         st.success("You have logged out successfully!")
         st.experimental_rerun()
 
