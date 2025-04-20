@@ -150,12 +150,14 @@ def get_temperature(location, units):
     return days, temp_min, temp_max
 
 def init_plot():
-    plt.style.use('seaborn-darkgrid')
+    # Use a simple built-in Matplotlib style
+    plt.style.use('ggplot')  # or 'fivethirtyeight', 'dark_background', etc.
     fig, ax = plt.subplots()
     ax.set_xlabel('Day')
     ax.set_ylabel(f'Temperature ({sign}C)')
     ax.set_title("5-Day Weather Forecast")
     return fig, ax
+
 
 def plot_temperature(location, units):
     fig, ax = init_plot()
