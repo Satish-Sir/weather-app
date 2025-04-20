@@ -104,7 +104,6 @@ states_districts = {
     ]
 }
 
-
 # -------------- DATABASE SETUP --------------
 def init_db():
     conn = sqlite3.connect('users.db')
@@ -278,4 +277,7 @@ else:
     if st.button("📥 Show Forecast"):
         weather_forecast(location, units)
         if graph_type == 'Bar Graph':
-            fig = plot_temperature(location, units
+            fig = plot_temperature(location, units)
+            st.pyplot(fig)
+        else:
+            plot_line_graph_temp(location, units)
