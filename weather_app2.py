@@ -2,6 +2,7 @@ import sqlite3
 import hashlib
 import requests
 import streamlit as st
+import time
 from datetime import datetime
 from matplotlib import pyplot as plt
 from matplotlib import dates
@@ -104,7 +105,6 @@ states_districts = {
     ]
 }
 
-
 # -------------- DATABASE SETUP --------------
 def init_db():
     conn = sqlite3.connect('users.db')
@@ -150,14 +150,12 @@ def get_temperature(location, units):
     return days, temp_min, temp_max
 
 def init_plot():
-    # Use a simple built-in Matplotlib style
-    plt.style.use('ggplot')  # or 'fivethirtyeight', 'dark_background', etc.
+    plt.style.use('ggplot')
     fig, ax = plt.subplots()
     ax.set_xlabel('Day')
     ax.set_ylabel(f'Temperature ({sign}C)')
     ax.set_title("5-Day Weather Forecast")
     return fig, ax
-
 
 def plot_temperature(location, units):
     fig, ax = init_plot()
@@ -236,7 +234,8 @@ if not st.session_state.logged_in:
                 st.session_state.logged_in = True
                 st.session_state.user = username
                 st.success(f"✅ Welcome back, {username}!")
-                st.experimental_rerun()
+                time.sleep(1)
+                st.rerun()
             else:
                 st.error("Incorrect username or password.")
 
@@ -251,12 +250,14 @@ if not st.session_state.logged_in:
                 try:
                     conn = sqlite3.connect('users.db')
                     cursor = conn.cursor()
-                    cursor.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)', (new_username, hash_password(new_password)))
+                    cursor.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)', 
+                                 (new_username, hash_password(new_password)))
                     conn.commit()
                     conn.close()
                     st.success("🎉 Registration successful. Please log in.")
                     st.session_state.page = "Login"
-                    st.experimental_rerun()
+                    time.sleep(1)
+                    st.rerun()
                 except sqlite3.IntegrityError:
                     st.warning("⚠️ Username already exists. Try a new one.")
             else:
@@ -291,4 +292,5 @@ else:
     if st.button("🔓 Logout"):
         st.session_state.logged_in = False
         st.session_state.page = "Login"
-        st.experimental_rerun()
+        time.sleep(0.5)
+        st.rerun()
