@@ -150,8 +150,7 @@ def get_temperature(location, units):
     return days, temp_min, temp_max
 
 def init_plot():
-    # Use a simple built-in Matplotlib style
-    plt.style.use('ggplot')  # You can try 'ggplot', 'fivethirtyeight', or others
+    plt.style.use('seaborn-darkgrid')
     fig, ax = plt.subplots()
     ax.set_xlabel('Day')
     ax.set_ylabel(f'Temperature ({sign}C)')
@@ -234,7 +233,6 @@ if not st.session_state.logged_in:
             if verify_user(username, password):
                 st.session_state.logged_in = True
                 st.session_state.user = username
-                st.query_params(logged_in="true")
                 st.success(f"✅ Welcome back, {username}!")
                 st.experimental_rerun()
             else:
@@ -264,24 +262,31 @@ if not st.session_state.logged_in:
 
 # -------------- MAIN WEATHER PAGE --------------
 else:
-    st.title(f"Hello, {st.session_state.user}! Here's your weather forecast 🌞")
+    st.markdown(f"""
+        <div style='text-align:center;'>
+            <h2 style='color:#2196f3;'>☀️ Hello, {st.session_state.user}! Here's your Weather Forecast</h2>
+        </div>
+    """, unsafe_allow_html=True)
 
-    # Sidebar Logout Button
-    if st.sidebar.button("Logout"):
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        state = st.selectbox("📍 Select Your State:", list(states_districts.keys()))
+        location = st.selectbox("📍 Select Your District:", states_districts[state], help="Select a district from the selected state")
+    with col2:
+        units = st.radio("🌡️ Temperature Unit:", ('celsius', 'fahrenheit'))
+
+    graph_type = st.selectbox("📊 Graph Type:", ('Bar Graph', 'Line Graph'))
+
+    if st.button("📥 Show Forecast"):
+        weather_forecast(location, units)
+        if graph_type == 'Bar Graph':
+            fig = plot_temperature(location, units)
+            st.pyplot(fig)
+        else:
+            plot_line_graph_temp(location, units)
+
+    st.markdown("<hr>", unsafe_allow_html=True)
+    if st.button("🔓 Logout"):
         st.session_state.logged_in = False
-        del st.session_state.user
-        st.query_params(logged_in="false")
-        st.success("You have logged out successfully!")
+        st.session_state.page = "Login"
         st.experimental_rerun()
-
-    # Dropdown for selecting state and district
-    state = st.selectbox("Select State", list(states_districts.keys()))
-    district = st.selectbox("Select District", states_districts[state])
-
-    units = st.radio("Temperature Unit", ('celsius', 'fahrenheit'))
-    
-    location = f"{district}, {state}, India"
-    
-    # Show the weather and plot temperature trends
-    weather_forecast(location, units)
-    plot_line_graph_temp(location, units)
