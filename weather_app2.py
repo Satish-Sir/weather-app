@@ -109,12 +109,12 @@ states_districts = {
 def init_db():
     conn = sqlite3.connect('users.db')
     cursor = conn.cursor()
-    cursor.execute('''
+    cursor.execute(''' 
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE,
             password_hash TEXT
-        )
+        ) 
     ''')
     conn.commit()
     conn.close()
@@ -234,7 +234,6 @@ if not st.session_state.logged_in:
                 st.session_state.logged_in = True
                 st.session_state.user = username
                 st.success(f"✅ Welcome back, {username}!")
-                st.experimental_rerun()
             else:
                 st.error("Incorrect username or password.")
 
@@ -254,7 +253,6 @@ if not st.session_state.logged_in:
                     conn.close()
                     st.success("🎉 Registration successful. Please log in.")
                     st.session_state.page = "Login"
-                    st.experimental_rerun()
                 except sqlite3.IntegrityError:
                     st.warning("⚠️ Username already exists. Try a new one.")
             else:
@@ -280,13 +278,4 @@ else:
     if st.button("📥 Show Forecast"):
         weather_forecast(location, units)
         if graph_type == 'Bar Graph':
-            fig = plot_temperature(location, units)
-            st.pyplot(fig)
-        else:
-            plot_line_graph_temp(location, units)
-
-    st.markdown("<hr>", unsafe_allow_html=True)
-    if st.button("🔓 Logout"):
-        st.session_state.logged_in = False
-        st.session_state.page = "Login"
-        st.experimental_rerun()
+            fig = plot_temperature(location, units
