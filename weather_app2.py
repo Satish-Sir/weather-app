@@ -1,4 +1,9 @@
 import sqlite3
+import streamlit as st
+
+# Trigger a rerun if necessary
+if st.button("Reload"):
+    st.experimental_rerun()  # Rerun the app when the button is pressed
 import hashlib
 import requests
 import streamlit as st
